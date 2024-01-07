@@ -1,4 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:ladex/src/blocs/pokemon_bloc.dart';
+import 'package:pokeapi/model/item/item.dart';
+import 'package:pokeapi/model/pokemon/pokemon.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Demo Pokedex'),
     );
   }
 }
@@ -55,17 +59,32 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  var poke_bloc = PokemonBloc();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  int _offset = 1;
+  int _counter = 1;
+  final int _limit = 20;
+  final scrollController = ScrollController();
+
+  @override
+  void initState(){
+    super.initState();
+
+    scrollController.addListener(() {
+      if(scrollController.position.maxScrollExtent == scrollController.offset){
+        _offset = _limit * _counter + 1;
+        _counter++;
+
+        poke_bloc.getPagesPokemones(offset: _offset, limit: _limit);
+      }
     });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+
+    scrollController.dispose();
   }
 
   @override
@@ -76,6 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    
+    poke_bloc.getPokemones(offset: _offset, limit: _limit);
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -89,37 +110,111 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+        child: StreamBuilder(
+              stream: poke_bloc.pokemones, 
+              builder:(BuildContext context, AsyncSnapshot<List<Pokemon?>> snapshot){
+
+                if(snapshot.hasData){
+                  return _buildList(snapshot.data);
+                }else{
+                  return Container(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              }
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    )
+    );
+  }
+
+    Future<void> _refresh() {
+    return poke_bloc.getPokemones(offset: _offset, limit: _limit);
+  }
+  
+  Widget _buildList(List<Pokemon?>? list) {
+    return RefreshIndicator(
+      onRefresh: () => _refresh(),
+      displacement: 50,
+      child: GridView.builder(
+        controller: scrollController,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio:  1.4
+        ), 
+        itemBuilder: (context, index){
+                    if(index < (list?.length?? 0)){
+            var item = list?[index];
+            return Container(child: _buildListTitle(item));
+          }
+        }
+      ),
+    );
+  }
+  
+  _buildListTitle(Pokemon? item) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        color: Colors.green[300],
+      ),
+      child: Container(
+        height: 150,
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: -20,
+              right: -10,
+              child: Image.asset('../assets/images/pokeball.png', height: 150, fit: BoxFit.fill)
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Positioned(
+              top: 20,
+              left: 10,
+              child: Text(
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 18
+                ),
+                item?.name?? '')),
+            Positioned(
+              top: 50,
+              left: 10,
+              child: Container(
+                decoration: BoxDecoration(                
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.all(Radius.circular(20))
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 4.0, bottom: 4.0),
+                  child: Text(
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    item?.types?[0].type?.name?? ''),
+                ),
+              )
+            ),
+            Positioned(
+              bottom: 5,
+              right: 5,
+              child: CachedNetworkImage(
+                imageUrl: item?.sprites?.frontDefault?? '',
+                height: 150,
+                fit: BoxFit.fitHeight,
+
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+    // return ListTile(
+    //   title: Text(item?.name?? ''),
+    //   leading: Image.network(
+    //     item?.sprites?.frontDefault?? '',
+    //     fit: BoxFit.fill,
+    //   ),
+    // );
   }
 }
