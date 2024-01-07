@@ -104,12 +104,13 @@ Future<Response> _checkStatus(ConnectivityResult result) async {
         isSuccess: true,
         result: ''
       );
-    } else
+    } else {
       return Response(
         isSuccess: false,
         message: 'Usted no tiene acceso a internet',
         result: ''
       );
+    }
   } on SocketException catch (_) {
     return Response(
       isSuccess: false,
