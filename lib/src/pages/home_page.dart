@@ -123,12 +123,11 @@ class _HomePageState extends State<HomePage> {
           controller: scrollController,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: _cantidad,
-            childAspectRatio:  1.55
           ), 
           itemBuilder: (context, index){
             if(index < (list?.length?? 0)){
                 var item = list?[index];
-                return PokemonCard(pokemon: item,);
+              return PokemonCard(pokemon: item,);
             }else {
               return null;
             }

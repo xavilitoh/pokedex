@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:ladex/src/pages/pokemon_details_page.dart';
 import 'src/pages/home_page.dart';
 
 void main() {
@@ -14,6 +15,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      routes: {
+        'home': (BuildContext context) => const HomePage(),
+        'pk_details':(context) => const PokemonDetailPage(),
+        
+      },
       theme: ThemeData(
         // This is the theme of your application.
         //

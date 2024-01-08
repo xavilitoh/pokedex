@@ -29,3 +29,8 @@ Color? cardColor ({String? type = '1' }){
   return color;
 
 } 
+
+
+String typeImage({String? type = '1' }){
+  return 'assets/images/types/$type.png';
+}
