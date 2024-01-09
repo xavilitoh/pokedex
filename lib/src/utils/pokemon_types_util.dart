@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 Color? cardColor ({String? type = '1' }){
 
   var color = switch (type) {
-    '1' => Colors.grey[400], //normal
+    '1' => Colors.blueGrey[400], //normal
     '2' => const Color(0xFFC22E28), //lucha
     '3' => const Color(0xFFA98FF3), //volador
     '4' => const Color(0xFFA33EA1), // veneno
@@ -14,7 +14,7 @@ Color? cardColor ({String? type = '1' }){
     '7' => const Color(0xFFA6B91A), //bug
     '8' => const Color(0xFF735797), //ghost
     '9' => const Color(0xFFB7B7CE), //steel
-    '10' => const Color(0xFFEE8130), //fire
+    '10' => Color.fromARGB(255, 238, 70, 48), //fire
     '11' => const Color(0xFF6390F0), //water
     '12' => const Color(0xFF7AC74C), //grass
     '13' => const Color(0xFFF7D02C), //electric

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pokeapi/model/pokemon/pokemon.dart';
 
+import '../../utils/general.dart';
 import '../../utils/pokemon_types_util.dart';
 import 'type_badge_widget.dart';
 
@@ -18,7 +19,7 @@ class PokemonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final size = MediaQuery.of(context).size;
+    final size = tamano(context);
 
     return InkWell(
       onTap: () => {
@@ -64,9 +65,10 @@ class PokemonCard extends StatelessWidget {
                 child: Hero(
                   tag:  pokemon?.name?? '',
                   child: CachedNetworkImage(
-                    imageUrl: pokemon?.sprites?.frontDefault?? '',
+                    imageUrl: officialImageURL(pokemon?.id),
                     height: size.height * 0.15,
-                    fit: BoxFit.fitHeight,
+                    width: size.height * 0.15,
+                    fit: BoxFit.contain,
                         
                   ),
                 ),

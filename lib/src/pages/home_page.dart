@@ -7,6 +7,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../blocs/pokemon_bloc.dart';
+import '../utils/general.dart';
 import '../widgets/pokemon/pokemon_card_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -55,17 +56,17 @@ class _HomePageState extends State<HomePage> {
 
     if (kIsWeb) {
       // running on the web!
-      _cantidad = 5;
+      _cantidad = 2;
     } else {
           // Se verifica la plataforma.
       if(Platform.isAndroid || Platform.isIOS){
         _cantidad = 2;
       }else{
-        _cantidad = 5;
+        _cantidad = 3;
       }
     }
 
-    final size = MediaQuery.of(context).size;
+    final size = tamano(context);
     return Scaffold(
       body: Stack(
         // Center is a layout widget. It takes a single child and positions it

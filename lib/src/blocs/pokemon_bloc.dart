@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 class PokemonBloc{
   final _pokemones = BehaviorSubject<List<Pokemon?>>();
 
-  Stream<List<Pokemon?>> get pokemones => _pokemones.stream; 
+  Stream<List<Pokemon?>> get pokemones => _pokemones.stream;
 
   Future getPokemones({int offset = 1, int limit = 10}) async {
     
@@ -16,6 +16,7 @@ class PokemonBloc{
 
   Future getPagesPokemones({int offset = 1, int limit = 10}) async {
     var list = _pokemones.value;
+    
     var response = await PokeAPI.getObjectList<Pokemon>(offset, limit);
     list.addAll(response);
     _pokemones.sink.add(list);
