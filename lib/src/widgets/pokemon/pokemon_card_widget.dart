@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pokeapi/model/pokemon/pokemon.dart';
 
+import '../../blocs/pokemon_bloc.dart';
 import '../../utils/general.dart';
 import '../../utils/pokemon_types_util.dart';
 import 'type_badge_widget.dart';
@@ -20,11 +21,14 @@ class PokemonCard extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final size = tamano(context);
+    
+    PokemonBloc pokebloc = PokemonBloc();
 
     return InkWell(
-      onTap: () => {
+      onTap: ()  {
         //navigate to pokemon details page
-        Navigator.pushNamed(context, 'pk_details', arguments: pokemon)
+        pokebloc.setPokemon(pokemon);
+        Navigator.pushNamed(context, 'pk_details', arguments: pokemon);
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: size.height * 0.01, horizontal: size.width * 0.015),
