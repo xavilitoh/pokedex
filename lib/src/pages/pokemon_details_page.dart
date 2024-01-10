@@ -6,6 +6,7 @@ import 'package:ladex/src/widgets/pokemon/type_badge_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import 'package:pokeapi/model/pokemon/pokemon.dart';
+import 'package:pokeapi/pokeapi.dart';
 
 import '../utils/general.dart';
 import '../utils/pokemon_types_util.dart';
@@ -19,11 +20,17 @@ class PokemonDetailPage extends StatefulWidget {
 class _PokemonDetailPageState extends State<PokemonDetailPage> {
   
   int selectedIndex = 0;
+  String? desc = '';
   @override
   Widget build(BuildContext context) {
 
     var pokemon = ModalRoute.of(context)?.settings.arguments as Pokemon;
     final size = tamano(context);
+
+    PokeAPI.getObject<Species>(pokemon.id?? 0).then((value) => setState(() {
+      desc = value?.flavorTextEntry?.replaceAll(RegExp(r'\n'), ' ')?? '';
+    },));
+    
 
     return Scaffold(
       backgroundColor: cardColor(type: pokemon.types?[0].type?.id),
@@ -229,6 +236,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> {
       margin: EdgeInsets.only(right: size.width * 0.1, left: size.width * 0.1),
       child: Column(
         children: [
+            Center(
+              child: Text(
+              desc?? '',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: size.height * 0.015,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            ),
+                      const SizedBox(
+            height: 20,
+          ),
             Text(
               'Estadisticas',
               style: TextStyle(
