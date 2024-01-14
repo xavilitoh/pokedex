@@ -56,7 +56,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     desc = pokemon.ydescription;
 
     return Scaffold(
-      appBar: opacity == 1? AppBar(
+      appBar: opacity > 0.9? AppBar(
         backgroundColor: typeColor(type: pokemon.typeofpokemon?[0]),
         centerTitle: true,
         iconTheme: const IconThemeData(
@@ -231,7 +231,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             )
           ),
           minHeight: fullHeight(context) * 0.55,
-          maxHeight: fullHeight(context) * 0.9,
+          maxHeight: fullHeight(context) * 0.95,
           boxShadow: const [CustomBoxShadow(
                 color: Colors.black,
                 offset:  Offset(10.0, 10.0),
@@ -681,12 +681,12 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'HP',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -695,18 +695,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.hp}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
                   percent: ((pokemon?.hp?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
@@ -716,18 +716,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
+    widgetsList.add(SizedBox(height: 10,));
     //attack
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'AT',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -736,18 +737,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.attack}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 18),
                   animationDuration: 2000,
                   percent: ((pokemon?.attack?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
@@ -757,19 +758,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-
+    widgetsList.add(SizedBox(height: 10,));
     //defense
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'DEF',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -778,18 +779,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.defense}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
                   percent: ((pokemon?.defense?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
@@ -799,19 +800,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-
+    widgetsList.add(SizedBox(height: 10,));
     //specialAttack
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'SATA',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -820,18 +821,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.specialAttack}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 18),
                   animationDuration: 2000,
                   percent: ((pokemon?.specialAttack?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
@@ -841,19 +842,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-
+    widgetsList.add(SizedBox(height: 10,));
     //specialdef
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'SDEF',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -862,18 +863,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.specialDefense}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
                   percent: ((pokemon?.specialDefense?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
@@ -883,19 +884,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-
+    widgetsList.add(SizedBox(height: 10,));
     //speed
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'VEL',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -904,18 +905,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.speed}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
                   percent: ((pokemon?.speed?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
@@ -925,19 +926,19 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-
+    widgetsList.add(SizedBox(height: 10,));
     //total
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: getDimention(context, 40),
+              width: getDimention(context, 80),
               child: Text(
                   'TOT',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context, 15),
+                    color: Colors.grey[400],
+                    fontSize: getFontSize(context, 18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
@@ -946,18 +947,18 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               child: Text(
                   '${pokemon?.total}',
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: getFontSize(context,13),
+                    color: Colors.grey[800],
+                    fontSize: getFontSize(context,18),
                     overflow: TextOverflow.ellipsis
                   ),
                 ),
             ),
             Center(
-              heightFactor: 5,
+              heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: getDimention(context, 190),
+                  width: fullWidth(context) * 0.48,
                   animation: true,
-                  lineHeight: 3.0,
+                  lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
                   percent: ((pokemon?.total?? 1) / 400).toDouble(),
                   barRadius: const Radius.circular(20),
