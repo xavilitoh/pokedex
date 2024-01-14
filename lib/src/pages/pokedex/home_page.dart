@@ -2,13 +2,16 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:pokeapi/model/pokemon/pokemon.dart';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:ladex/src/models/common.dart';
+import 'package:ladex/src/models/pokemon_b.dart';
+import 'package:ladex/src/services/poke_Api.dart';
+import 'package:ladex/src/widgets/animated_ball.dart';
 
-import '../blocs/pokemon_bloc.dart';
-import '../utils/general.dart';
-import '../widgets/pokemon/pokemon_card_widget.dart';
+import '../../blocs/pokemon_bloc.dart';
+import '../../delegates/search_delegate.dart';
+import '../../providers/pokemos/pokemon_search_provider.dart';
+import '../../utils/general.dart';
+import '../../widgets/pokemon/pokemon_card_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,31 +20,35 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   PokemonBloc pokebloc = PokemonBloc();
   int _cantidad = 2;
-  int _offset = 1;
-  int _counter = 1;
+  final int _offset = 1;
   final int _limit = 20;
   final scrollController = ScrollController();
+  late AnimationController _controller;
 
   Future<void> _refresh() {
     return pokebloc.getPokemones(offset: 1, limit: 20);
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     pokebloc.getPokemones(offset: _offset, limit: _limit);
     scrollController.addListener(() {
       if(scrollController.position.maxScrollExtent == scrollController.offset){
-        _offset = _limit * _counter + 1;
-        _counter++;
+        // _offset = _limit * _counter + 1;
+        // _counter++;
 
-        pokebloc.getPagesPokemones(offset: _offset, limit: _limit);
+        // pokebloc.getPagesPokemones(offset: _offset, limit: _limit);
       }
     });
+
+    _controller = AnimationController(
+    vsync: this, duration: const Duration(milliseconds: 6000));
+    _controller.repeat();
   }
 
   @override
@@ -49,21 +56,20 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
 
     scrollController.dispose();
+    _controller.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
 
-    if (kIsWeb) {
+    if (fullWidth(context) <= 460) {
       // running on the web!
       _cantidad = 2;
-    } else {
-          // Se verifica la plataforma.
-      if(Platform.isAndroid || Platform.isIOS){
-        _cantidad = 2;
-      }else{
-        _cantidad = 3;
-      }
+    } else if(fullWidth(context) <= 860) {
+      _cantidad = 4;
+    }
+    else{
+      _cantidad = 6;
     }
 
     final size = tamano(context);
@@ -73,28 +79,44 @@ class _HomePageState extends State<HomePage> {
         // in the middle of the parent.
         children: [
           Positioned(
-              top: -(size.height * 0.02),
+              top: -(getDimention(context, 50)),
               right: - (size.height * 0.015),
-              child: Image.asset('assets/images/pokeball.png', height: size.height * 0.25, fit: BoxFit.fill)
+              child: AnimatedBall(imageHeight: fullHeight(context) * 0.25, color: Colors.black26, controller: _controller,)
           ),
           Positioned(
-            top: size.height * 0.12,
+            top: fullHeight(context) * 0.08,
             left: size.width * 0.08,
-            child: Text(
-              'Pokedex',
-              style:  TextStyle(
-                fontSize: size.height * 0.04,
-                fontWeight: FontWeight.w900
+            child: Container(
+              width: fullWidth(context) - getDimention(context, 70),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [Text(
+                  'Pokedex',
+                  style:  TextStyle(
+                    fontSize: size.height * 0.04,
+                    fontWeight: FontWeight.w900
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => {
+                    showSearch(
+                      context: context, 
+                      delegate: SearchPokemonDelegate())
+                  }, 
+                  icon: const Icon(Icons.search)
+                )
+                ]
               ),
             )
           ),
           Positioned(
-            top: size.height * 0.20,
+            top: fullHeight(context) * 0.20,
             bottom: 0,
-            width: size.width,
+            width: fullWidth(context),
             child: StreamBuilder(
                 stream: pokebloc.pokemones, 
-                builder:(BuildContext context, AsyncSnapshot<List<Pokemon?>> snapshot){
+                builder:(BuildContext context, AsyncSnapshot<List<PokemonB?>> snapshot){
             
                   if(snapshot.hasData){
                     return _buildList(snapshot.data, size);
@@ -114,7 +136,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildList(List<Pokemon?>? list, Size size) {
+  Widget _buildList(List<PokemonB?>? list, Size size) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: size.width * 0.035),
       child: RefreshIndicator(

@@ -38,9 +38,10 @@ dependencies:
   connectivity:
   rxdart:
   http:
-  pokeapi: 1.0.3
+  #pokeapi: 1.0.3
   cached_network_image: 3.3.1
   percent_indicator:
+  sliding_up_panel:
   
 
 dev_dependencies:
@@ -69,6 +70,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/types/
+    - assets/files/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,5 +1,7 @@
 
 
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 String formatoCeros(int? numero) {
@@ -17,11 +19,23 @@ String formatoCeros(int? numero) {
 
 
 String officialImageURL(int? id){
-return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
+  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
+}
+
+String ImageURL(String? id){
+  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
 }
 
 String officialShinyImageURL(int? id){
-return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/$id.png';
+  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/$id.png';
+}
+
+String pokeAminated(int? id){
+  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$id.gif';
+}
+
+String pokeShinyAminated(int? id){
+  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/shiny/$id.gif';
 }
 
 Size tamano(BuildContext context){
@@ -40,4 +54,41 @@ Size tamano(BuildContext context){
   }
 
   return Size(nw, nh);
+}
+
+Widget customText(String msg, {TextStyle? style,TextAlign textAlign = TextAlign.justify,overflow = TextOverflow.clip,BuildContext? context}){
+
+  if(context != null && style != null){
+    var fontSize = style.fontSize ?? 10;
+    style =  style.copyWith(fontSize: fontSize - ( fullWidth(context) <= 375  ? 2 : 0));
+  }
+  return Text(msg,style: style,textAlign: textAlign,overflow:overflow,);
+}
+
+double fullWidth(BuildContext context) {
+  return MediaQuery.of(context).size.width;
+} 
+
+double fullHeight(BuildContext context) {
+  return MediaQuery.of(context).size.height;
+} 
+
+double getDimention(context, double unit){
+  if(fullWidth(context) <= 860.0){
+    return unit / 1.3;
+  }else if(fullWidth(context) <= 1500){
+    return unit / 1;
+  }
+  else {
+    return unit / 0.7;
+  }
+}
+
+double getFontSize(BuildContext context,double size){
+  if(MediaQuery.of(context).textScaleFactor < 1){
+    return getDimention(context,size);
+  }
+  else{
+    return getDimention(context,size / MediaQuery.of(context).textScaleFactor);
+  }
 }

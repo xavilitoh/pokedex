@@ -1,11 +1,16 @@
 
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pokeapi/model/pokemon/pokemon.dart';
+import 'package:ladex/src/models/pokemon_b.dart';
+// import 'package:pokeapi/model/pokemon/pokemon.dart';
 
-import '../../blocs/pokemon_bloc.dart';
-import '../../utils/general.dart';
+import '../../blocs/bloc_provider.dart';
+import '../../models/pokemon.dart';
+import '../../services/poke_Api.dart';
+import '../../utils/general.dart';  
 import '../../utils/pokemon_types_util.dart';
 import 'type_badge_widget.dart';
 
@@ -15,35 +20,39 @@ class PokemonCard extends StatelessWidget {
     required this.pokemon
   });
 
-  final Pokemon? pokemon;
+  final PokemonB? pokemon;
 
   @override
   Widget build(BuildContext context) {
-
-    final size = tamano(context);
     
-    PokemonBloc pokebloc = PokemonBloc();
+    BlocProvider? pokebloc = BlocProvider.of(context);
 
     return InkWell(
-      onTap: ()  {
-        //navigate to pokemon details page
-        pokebloc.setPokemon(pokemon);
+      hoverColor: Colors.transparent,
+      onTap: () async {
+        
+         PokeAPI.getObject<Species>(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')).then((value) => pokemon?.ydescription =value?.flavorTextEntry?.replaceAll(RegExp(r'\n'), ' ')?? '');
+        pokebloc?.pokemonBloc.setPokemon(pokemon);
+
+        // navigate to pokemon details page
         Navigator.pushNamed(context, 'pk_details', arguments: pokemon);
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: size.height * 0.01, horizontal: size.width * 0.015),
+        height: fullHeight(context) * 0.3,
+        width: getDimention(context, 20),
+        margin: EdgeInsets.symmetric(vertical: fullHeight(context) * 0.01, horizontal:getFontSize(context, 10)),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: cardColor(type: pokemon?.types?[0].type?.id),
+          color: typeColor(type: pokemon?.typeofpokemon?[0])
         ),
         child: SizedBox(
-          height: size.height * 0.8,
+          height: fullHeight(context) * 0.3,
           child: Stack(
             children: [
               Positioned(
-                bottom: - (size.height * 0.03),
-                right: - (size.height * 0.015),
-                child: Image.asset('assets/images/pokeball.png', height: size.height * 0.15, fit: BoxFit.fill)
+                top: getDimention(context, 55),
+                left: getDimention(context, 70),
+                child: Image.asset('assets/images/pokeball.png', height: getDimention(context, 150), fit: BoxFit.fill)
               ),
               Positioned(
                 top: 20,
@@ -56,22 +65,21 @@ class PokemonCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontSize: size.height * 0.020,
+                        fontSize: getFontSize(context, 18),
                         overflow: TextOverflow.clip
                       ),
                       pokemon?.name?.toUpperCase()?? ''),
-                      TypeBadge(type: pokemon?.types?[0])
+                      TypeBadge(type: pokemon?.typeofpokemon?[0], onlyImage: true,)
                   ],
                 )),
               Positioned(
-                bottom: - (size.height * 0.02),
-                right: - (size.width * 0.02),
+                top: getDimention(context, 50),
+                left: getDimention(context, 70),
                 child: Hero(
                   tag:  pokemon?.name?? '',
                   child: CachedNetworkImage(
-                    imageUrl: officialImageURL(pokemon?.id),
-                    height: size.height * 0.15,
-                    width: size.height * 0.15,
+                    imageUrl: officialImageURL(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+                    height: getDimention(context, 150),
                     fit: BoxFit.contain,
                         
                   ),
