@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:ladex/src/models/pokemon_b.dart';
 
+import '../../utils/constants.dart';
+
  class PokemonSearchProvider{
 
   static Future<List<PokemonB>> readJsonFile() async {
-    var input = await rootBundle.loadString('assets/files/pokemons.json');
+    var input = await rootBundle.loadString(pokemonFile);
     var map = json.decode(input);
     
     List<PokemonB> pokemones = [];

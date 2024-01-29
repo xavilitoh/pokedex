@@ -7,9 +7,6 @@ import 'package:ladex/src/widgets/pokemon/type_badge_widget.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-// import 'package:pokeapi/model/pokemon/pokemon.dart';
-// import 'package:pokeapi/pokeapi.dart';
-
 import '../../blocs/bloc_provider.dart';
 import '../../utils/general.dart';
 import '../../utils/pokemon_types_util.dart';
@@ -27,7 +24,9 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
   String? desc = '';
   
   double opacity = 0;
+  double divider = 100;
   BlocProvider? pokebloc;
+  PokemonB pokemon = PokemonB();
   late AnimationController _controller;
 
   @override
@@ -45,15 +44,37 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     super.dispose();
   }
 
+  void setDivider(int total){
+    if(total> 100 && total < 200) {
+      divider = 200;
+    } else if(total > 200 && total < 300) {divider = 300;}
+    else if(total > 300 && total < 400) {divider = 400;}
+    else if(total > 400 && total < 500) {divider = 500;}
+    else if(total > 500 && total < 600) {divider = 600;}
+    else if(total > 600 && total < 700) {divider = 700;}
+    else if(total > 700 && total < 800) {divider = 800;}
+    else if(total > 800 && total < 900) {divider = 900;}
+    else if(total > 900) {divider = 1000;}
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
-    var pokemon = ModalRoute.of(context)?.settings.arguments as PokemonB;
+    if(pokemon.name == null){
+      pokemon = ModalRoute.of(context)?.settings.arguments as PokemonB;
+    }
+    
     final size = tamano(context);
     pokebloc = BlocProvider.of(context);
 
-    desc = pokemon.ydescription;
+    pokebloc?.pokemonBloc.evoluciones(pokemon.evolutions);
+    
+    setState(() {
+      setDivider(pokemon.total?? 600);
+    });
+    
+    desc =  pokemon.xdescription??  "${pokemon.ydescription}";
 
     return Scaffold(
       appBar: opacity > 0.9? AppBar(
@@ -74,22 +95,23 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                 ),
       ) : null ,
       backgroundColor: typeColor(type: pokemon.typeofpokemon?[0]),
-      body: StreamBuilder(
-            stream: pokebloc?.pokemonBloc.pokemon, 
-            builder:(BuildContext context, AsyncSnapshot<PokemonB?> snapshot){
+      body: _details(context, pokemon, size),
+      // body: StreamBuilder(
+      //       stream: pokebloc?.pokemonBloc.pokemon, 
+      //       builder:(BuildContext context, AsyncSnapshot<PokemonB?> snapshot){
         
-              if(snapshot.hasData){
-                return _details(context, snapshot.data, size);
-              }else{
-                return Center(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
-                    child: const CircularProgressIndicator()
-                  ),
-                );
-              }
-            }
-        )      
+      //         if(snapshot.hasData){
+      //           return _details(context, snapshot.data, size);
+      //         }else{
+      //           return Center(
+      //             child: Container(
+      //               margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
+      //               child: const CircularProgressIndicator()
+      //             ),
+      //           );
+      //         }
+      //       }
+      //   )      
     );
   }
 
@@ -239,7 +261,6 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                 blurStyle: BlurStyle.outer
             )],
           onPanelSlide: (slide) {
-            // print(slide.toString());
             setState(() {
               opacity = slide;
             });
@@ -298,13 +319,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                       DraggableScrollableSheet(
                         initialChildSize: 0.95,
                         builder: (context, scrollController){
-                          return SingleChildScrollView(
-                            child: 
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: getDimention(context, 50)),
-                                child: _stats(pokemon)
-                              ),
-                          );
+                          return _evoluciones(context);
                         },
                       ),
                     ],
@@ -319,6 +334,56 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     );
   }
 
+  Widget _evoluciones(BuildContext context) {
+    return StreamBuilder(
+              stream: pokebloc?.pokemonBloc.lineaEvolutiva,
+              builder: (context, snapshot) {
+
+                if (snapshot.hasData) {
+                  return SingleChildScrollView(
+                      child: 
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: getDimention(context, 0)),
+                          child: Column(
+                            children: _evolsDetails(snapshot.data),
+                          )
+                        ),
+                    );
+                }else{
+                return Container();
+                }
+              },
+            );
+  }
+
+  _evolsDetails(List<PokemonB?>? list){
+
+    List<Widget> l = [];
+    list?.forEach((element) { 
+
+      l.add(ListTile(
+        title: Text(element?.name?? ""),
+        leading: CachedNetworkImage(imageUrl: pokeAminated(int.parse(element?.id?.replaceAll('#', '')?? '0')), width: getDimention(context, 100)),
+        subtitle: Text("${element?.weight} | ${element?.height} "),
+        trailing: const Icon(Icons.arrow_forward_ios_rounded),
+        onTap: () async {
+           //  PokeAPI.getObject<Species>(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')).then((value) => pokemon?.ydescription =value?.flavorTextEntry?.replaceAll(RegExp(r'\n'), ' ')?? '');
+            pokebloc?.pokemonBloc.setPokemon(element);
+
+            // // navigate to pokemon details page
+            // Navigator.pushNamed(context, 'pk_details', arguments: element);
+
+            setState(() {
+              pokemon = element?? PokemonB();
+            });
+        },
+      ));
+    });
+
+    return l;
+
+  }
+
   IconButton _likeBTN() {
     return IconButton(
       onPressed: () {},
@@ -330,12 +395,12 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [        
-        Container(
+        Center(
           child: Text(
               desc?? '',
               style: TextStyle(
                 color: Colors.grey,
-                fontSize: getFontSize(context, 15),
+                fontSize: getFontSize(context, 18),
               ),
               textAlign: TextAlign.center,
             ),
@@ -547,7 +612,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                     fontSize: getFontSize(context, 18)
                   ),
                 ),
-                SizedBox(width: 20,),
+                const SizedBox(width: 20,),
                 Text(
                   '♀️',
                   style: TextStyle(
@@ -704,11 +769,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
-                  percent: ((pokemon?.hp?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.hp?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -716,7 +781,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-    widgetsList.add(SizedBox(height: 10,));
+    widgetsList.add(const SizedBox(height: 10,));
     //attack
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,11 +811,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 18),
                   animationDuration: 2000,
-                  percent: ((pokemon?.attack?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.attack?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -758,7 +823,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-    widgetsList.add(SizedBox(height: 10,));
+    widgetsList.add(const SizedBox(height: 10,));
     //defense
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -788,11 +853,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
-                  percent: ((pokemon?.defense?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.defense?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -800,7 +865,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-    widgetsList.add(SizedBox(height: 10,));
+    widgetsList.add(const SizedBox(height: 10,));
     //specialAttack
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -830,11 +895,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 18),
                   animationDuration: 2000,
-                  percent: ((pokemon?.specialAttack?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.specialAttack?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -842,7 +907,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-    widgetsList.add(SizedBox(height: 10,));
+    widgetsList.add(const SizedBox(height: 10,));
     //specialdef
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -872,11 +937,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
-                  percent: ((pokemon?.specialDefense?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.specialDefense?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -884,7 +949,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-    widgetsList.add(SizedBox(height: 10,));
+    widgetsList.add(const SizedBox(height: 10,));
     //speed
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -914,11 +979,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
-                  percent: ((pokemon?.speed?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.speed?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -926,7 +991,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ),
           ],
         ));
-    widgetsList.add(SizedBox(height: 10,));
+    widgetsList.add(const SizedBox(height: 10,));
     //total
     widgetsList.add(Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -956,11 +1021,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             Center(
               heightFactor: 2,
               child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.48,
+                  width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 15),
                   animationDuration: 2000,
-                  percent: ((pokemon?.total?? 1) / 400).toDouble(),
+                  percent: ((pokemon?.total?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                   backgroundColor: Colors.grey[300],
@@ -978,7 +1043,9 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
 
 
 class CustomBoxShadow extends BoxShadow {
-      final BlurStyle blurStyle;
+      @override
+        // ignore: overridden_fields
+        final BlurStyle blurStyle;
     
       const CustomBoxShadow({
         Color color = const Color(0xFF000000),
@@ -991,10 +1058,11 @@ class CustomBoxShadow extends BoxShadow {
       Paint toPaint() {
         final Paint result = Paint()
           ..color = color
-          ..maskFilter = MaskFilter.blur(this.blurStyle, blurSigma);
+          ..maskFilter = MaskFilter.blur(blurStyle, blurSigma);
         assert(() {
-          if (debugDisableShadows)
+          if (debugDisableShadows) {
             result.maskFilter = null;
+          }
           return true;
         }());
         return result;

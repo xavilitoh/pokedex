@@ -37,7 +37,7 @@ class TypeBadge extends StatelessWidget {
                 color: typeColor(type: type),
                 fontSize: getFontSize(context, 18)
               ),
-              type?? '') : Container(),
+              type) : Container(),
           ],
         ),
       ),

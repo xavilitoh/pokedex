@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           
         },
         theme: ThemeData(
-          fontFamily: 'Montserrat-Regular',
+          fontFamily: 'HankRnd-Regular',
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),

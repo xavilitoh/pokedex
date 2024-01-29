@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'general.dart';
+
 Color? cardColor ({String? type = '1' }){
 
   var color = switch (type) {
@@ -32,7 +34,7 @@ Color? cardColor ({String? type = '1' }){
 
 Color? typeColor ({dynamic type = '1' }){
 
-  var color = switch (type) {
+  var color = switch (capitalizeFirstLetter(type)) {
     'Normal' => Colors.blueGrey[400], //normal
     'Fighting' => const Color(0xFFC22E28), //Fighting
     'Flying' => const Color(0xFFA98FF3), //volador
@@ -60,7 +62,7 @@ Color? typeColor ({dynamic type = '1' }){
 
 int typeId ({dynamic type = '1' }){
 
-  var id = switch (type) {
+  var id = switch (capitalizeFirstLetter(type)) {
     'Normal' => 1, //normal
     'Fighting' => 2, //Fighting
     'Flying' => 3, //volador

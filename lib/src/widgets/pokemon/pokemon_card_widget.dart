@@ -8,8 +8,6 @@ import 'package:ladex/src/models/pokemon_b.dart';
 // import 'package:pokeapi/model/pokemon/pokemon.dart';
 
 import '../../blocs/bloc_provider.dart';
-import '../../models/pokemon.dart';
-import '../../services/poke_Api.dart';
 import '../../utils/general.dart';  
 import '../../utils/pokemon_types_util.dart';
 import 'type_badge_widget.dart';
@@ -31,7 +29,7 @@ class PokemonCard extends StatelessWidget {
       hoverColor: Colors.transparent,
       onTap: () async {
         
-         PokeAPI.getObject<Species>(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')).then((value) => pokemon?.ydescription =value?.flavorTextEntry?.replaceAll(RegExp(r'\n'), ' ')?? '');
+        //  PokeAPI.getObject<Species>(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')).then((value) => pokemon?.ydescription =value?.flavorTextEntry?.replaceAll(RegExp(r'\n'), ' ')?? '');
         pokebloc?.pokemonBloc.setPokemon(pokemon);
 
         // navigate to pokemon details page

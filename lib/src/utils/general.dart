@@ -19,23 +19,24 @@ String formatoCeros(int? numero) {
 
 
 String officialImageURL(int? id){
-  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
+  return 'assets/images/$id.png';
 }
 
+// ignore: non_constant_identifier_names
 String ImageURL(String? id){
-  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
+  return 'assets/images/$id.png';
 }
 
 String officialShinyImageURL(int? id){
-  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/$id.png';
+  return 'assets/images/variocolor/$id.png';
 }
 
 String pokeAminated(int? id){
-  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$id.gif';
+  return 'assets/images/animado/$id.gif';
 }
 
 String pokeShinyAminated(int? id){
-  return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/shiny/$id.gif';
+  return 'assets/images/animado/variocolor/$id.gif';
 }
 
 Size tamano(BuildContext context){
@@ -91,4 +92,11 @@ double getFontSize(BuildContext context,double size){
   else{
     return getDimention(context,size / MediaQuery.of(context).textScaleFactor);
   }
+}
+
+String capitalizeFirstLetter(String input) {
+  if (input.isEmpty) {
+    return input;
+  }
+  return input[0].toUpperCase() + input.substring(1);
 }

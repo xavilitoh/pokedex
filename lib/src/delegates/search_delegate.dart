@@ -14,18 +14,16 @@ class SearchPokemonDelegate extends SearchDelegate{
   String get searchFieldLabel => 'Buscar pokemon';
   @override
   List<Widget>? buildActions(BuildContext context) {
-    // TODO: implement buildActions
     return [
-      IconButton(icon: Icon(Icons.clear), onPressed: () => this.query = '')
+      IconButton(icon: const Icon(Icons.clear), onPressed: () => query = '')
     ];
   }
 
   @override
   Widget? buildLeading(BuildContext context) {
-    // TODO: implement buildLeading
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () => this.close(context, null));
+      icon: const Icon(Icons.arrow_back_ios),
+      onPressed: () => close(context, null));
   }
 
   @override
@@ -34,23 +32,21 @@ class SearchPokemonDelegate extends SearchDelegate{
     final bloc = BlocProvider.of(context)?.pokemonBloc;
 
     bloc?.searchPokemones(query);
-
-    // TODO: implement buildResults
     return _searchResut(bloc, context);
   }
 
   Scaffold _searchResut(PokemonBloc? bloc, BuildContext context) {
 
-    int _cantidad = 2;
+    int cantidad = 2;
 
     if (fullWidth(context) <= 460) {
       // running on the web!
-      _cantidad = 2;
+      cantidad = 2;
     } else if(fullWidth(context) <= 860) {
-      _cantidad = 4;
+      cantidad = 4;
     }
     else{
-      _cantidad = 6;
+      cantidad = 6;
     }
     
     return Scaffold(
@@ -60,7 +56,7 @@ class SearchPokemonDelegate extends SearchDelegate{
         if(snapshot.hasData){
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: _cantidad,
+              crossAxisCount: cantidad,
             ), 
             itemBuilder: (context, index){
               if(index < (snapshot.data?.length?? 0)){
@@ -85,7 +81,6 @@ class SearchPokemonDelegate extends SearchDelegate{
     final bloc = BlocProvider.of(context)?.pokemonBloc;
 
     bloc?.searchPokemones(query);
-    // TODO: implement buildSuggestions
     return _searchResut(bloc, context);
   }
 

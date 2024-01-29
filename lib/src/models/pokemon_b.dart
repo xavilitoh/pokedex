@@ -69,6 +69,7 @@ class PokemonB {
       weight = json['weight'];
       typeofpokemon = json['typeofpokemon'];
       weaknesses = json['weaknesses'];
+      evolutions = json['evolutions'];
       hp = json['hp'];
       attack = json['attack'];
       defense = json['defense'];
@@ -83,7 +84,7 @@ class PokemonB {
       eggGroups = json['egg_groups'];
       evolvedfrom = json['evolvedfrom'];
       reason = json['reason'];
-      baseExp = json['base_exp'];
+      baseExp = json['base_exp'].toString();
       abilities = json['abilities'];
     }
 

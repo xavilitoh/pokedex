@@ -8,8 +8,8 @@ class BlocProvider extends InheritedWidget {
   final pokemonBloc = PokemonBloc();
 
   factory BlocProvider({ Key? key, Widget? child}) {
-    if(child == null) child = Container();
-    return _instance?? BlocProvider._(child: child, key: key,);
+    child ??= Container();
+    return _instance?? BlocProvider._(key: key,child: child,);
   }
 
   BlocProvider._({ Key? key,  required child}) : super(key: key, child: child);

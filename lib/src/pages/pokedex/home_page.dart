@@ -2,14 +2,11 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:ladex/src/models/common.dart';
 import 'package:ladex/src/models/pokemon_b.dart';
-import 'package:ladex/src/services/poke_Api.dart';
 import 'package:ladex/src/widgets/animated_ball.dart';
 
 import '../../blocs/pokemon_bloc.dart';
 import '../../delegates/search_delegate.dart';
-import '../../providers/pokemos/pokemon_search_provider.dart';
 import '../../utils/general.dart';
 import '../../widgets/pokemon/pokemon_card_widget.dart';
 
@@ -86,7 +83,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Positioned(
             top: fullHeight(context) * 0.08,
             left: size.width * 0.08,
-            child: Container(
+            child: SizedBox(
               width: fullWidth(context) - getDimention(context, 70),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
