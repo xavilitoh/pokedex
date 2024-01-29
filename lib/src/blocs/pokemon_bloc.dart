@@ -27,17 +27,23 @@ class PokemonBloc{
     _pokemon.sink.add(pokemon);
   }
 
-  Future evoluciones(List<dynamic>? evols)async{
+  Future evoluciones(List<dynamic>? evols) async{
 
-    List<PokemonB> evoluciones = [];
-    var response = await PokemonSearchProvider.readJsonFile();
+    try{
+          List<PokemonB> evoluciones = [];
+      var response = await PokemonSearchProvider.readJsonFile();
 
-    evols?.forEach((evolucion) {
-      var poke = response.firstWhere((element) => element.name == evolucion);
-      evoluciones.add(poke);
-    });
+      evols?.forEach((evolucion) {
+        var poke = response.firstWhere((element) => element.name == evolucion);
+        evoluciones.add(poke);
+      });
 
-    _LineaEvolutiva.sink.add(evoluciones);
+      _LineaEvolutiva.sink.add(evoluciones);
+    }
+    // ignore: empty_catches
+    catch(identifier){
+      _LineaEvolutiva.sink.add([]);
+    }
 
   }
 

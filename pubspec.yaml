@@ -16,6 +16,7 @@ dependencies:
   cached_network_image: 3.3.1
   percent_indicator:
   sliding_up_panel:
+  carousel_slider:
   
 
 dev_dependencies:

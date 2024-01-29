@@ -1,6 +1,4 @@
 
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ladex/src/models/pokemon_b.dart';
 import 'package:ladex/src/widgets/pokemon/type_badge_widget.dart';
@@ -8,6 +6,8 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../blocs/bloc_provider.dart';
+import '../../delegates/search_delegate.dart';
+import '../../providers/pokemos/pokemon_search_provider.dart';
 import '../../utils/general.dart';
 import '../../utils/pokemon_types_util.dart';
 import '../../widgets/animated_ball.dart';
@@ -24,24 +24,44 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
   String? desc = '';
   
   double opacity = 0;
+  int pokeID = 0;
   double divider = 100;
   BlocProvider? pokebloc;
   PokemonB pokemon = PokemonB();
   late AnimationController _controller;
+  final _panelController = PanelController();
+  late final ScrollController _scrollController = ScrollController();
+  late TabController _tabController;
+
+  late List<Widget> _tabs = [];
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-    vsync: this, duration: const Duration(milliseconds: 6000));
+    vsync: this, duration: const Duration(milliseconds: 10000));
     _controller.repeat();
+    
+    _scrollController.addListener(_onScrollEvent);
+
+    _tabController = TabController(length: 3, vsync: this, initialIndex: selectedIndex);
   }
 
   @override
   void dispose(){
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onScrollEvent() {
+    final extentAfter = _scrollController.position.extentAfter;
+
+    if(extentAfter > 0){
+      _panelController.animatePanelToPosition(0);
+    }else{
+      _panelController.animatePanelToPosition(1);
+    }
   }
 
   void setDivider(int total){
@@ -57,24 +77,40 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     else if(total > 900) {divider = 1000;}
   }
 
+  Future changePokemon(int id) async {
+      var response = await PokemonSearchProvider.readJsonFile();
+
+      setState(() {
+        pokemon = response.firstWhere((element) => int.parse(element.id?? '0') == id);
+      });
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
+    _tabs = [
+              Tab( child: Text('General',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),),
+              Tab(child: Text('Estadisticas',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),),
+              Tab(child: Text('Evoluciones',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),)
+            ];
 
     if(pokemon.name == null){
       pokemon = ModalRoute.of(context)?.settings.arguments as PokemonB;
     }
     
-    final size = tamano(context);
-    pokebloc = BlocProvider.of(context);
+    desc =  pokemon.xdescription??  "${pokemon.ydescription}";
 
+    pokeID = int.parse(pokemon.id?? '0');
+    
+    final size = tamano(context);
+
+    pokebloc = BlocProvider.of(context);
     pokebloc?.pokemonBloc.evoluciones(pokemon.evolutions);
     
     setState(() {
       setDivider(pokemon.total?? 600);
-    });
-    
-    desc =  pokemon.xdescription??  "${pokemon.ydescription}";
+    });    
 
     return Scaffold(
       appBar: opacity > 0.9? AppBar(
@@ -86,32 +122,34 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
         actions: [
           _likeBTN()
         ],
-        title: Text(
-                  pokemon.name?? '',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: getFontSize(context, 20)
-                  ),
-                ),
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () async
+              {
+                await changePokemon((pokeID - 1));
+              }, 
+              icon: const Icon(Icons.arrow_back_ios_new_outlined)),
+            Text(
+                      pokemon.name?? '',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: getFontSize(context, 20)
+                      ),
+                    ),
+            IconButton(
+              onPressed: () async
+              {
+                await changePokemon((pokeID + 1));
+              }, 
+              icon: const Icon(Icons.arrow_forward_ios_outlined)),
+          ],
+        ),
       ) : null ,
       backgroundColor: typeColor(type: pokemon.typeofpokemon?[0]),
-      body: _details(context, pokemon, size),
-      // body: StreamBuilder(
-      //       stream: pokebloc?.pokemonBloc.pokemon, 
-      //       builder:(BuildContext context, AsyncSnapshot<PokemonB?> snapshot){
-        
-      //         if(snapshot.hasData){
-      //           return _details(context, snapshot.data, size);
-      //         }else{
-      //           return Center(
-      //             child: Container(
-      //               margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
-      //               child: const CircularProgressIndicator()
-      //             ),
-      //           );
-      //         }
-      //       }
-      //   )      
+      body: _details(context, pokemon, size)    
     );
   }
 
@@ -218,24 +256,55 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               bottom: fullHeight(context) * 0.58,
               right: 50,
               left: 50,
-              child: Hero(
-                tag: pokemon?.name?? '',
-                child: Align(
-                  heightFactor: getDimention(context,0.75),
-                  widthFactor: .7,
-                  child: Opacity(
-                    opacity: _invertirOpacity(),
-                    child: CachedNetworkImage(
-                      alignment: Alignment.topRight,
-                      imageUrl: officialImageURL(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
-                      height: getDimention(context,200),
-                      fit: BoxFit.fitHeight,                        
+              child: SizedBox(
+                width: fullWidth(context),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    IconButton(
+                     onPressed: () async
+                      {
+                        await changePokemon((pokeID - 1));
+                      },
+                      icon: Icon(
+                         Icons.arrow_back_ios_outlined,
+                         color: Colors.white,
+                         size: getFontSize(context, 40),
+                        )
+                      ),
+                    Hero(
+                      tag: pokemon?.name?? '',
+                      child: Align(
+                        heightFactor: getDimention(context,0.75),
+                        widthFactor: .7,
+                        child: Opacity(
+                          opacity: _invertirOpacity(),
+                          child: Image.asset(
+                            officialImageURL(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+                            height: getDimention(context,200),
+                            fit: BoxFit.fitHeight,                        
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    IconButton(
+                      onPressed: () async
+                      {
+                        await changePokemon((pokeID + 1));
+                      },
+                      icon: Icon(
+                         Icons.arrow_forward_ios_outlined,
+                         color: Colors.white,
+                         size: getFontSize(context, 40),
+                        )
+                      ),
+                  ],
                 ),
               ),
         ),
         SlidingUpPanel(
+          controller: _panelController,
           header: Center(
             child: SizedBox(
               height: 20,
@@ -276,30 +345,27 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20)),
             ),
-            child: DefaultTabController(
-              length: 3,
-              child: Padding(
+            child: Padding(
                 padding: EdgeInsets.only(top: fullHeight(context) * 0.04),
                 child: Scaffold(
                   backgroundColor: Colors.white,
                   appBar: TabBar(
+                    controller: _tabController,
                     indicatorColor: typeColor(type: pokemon?.typeofpokemon?[0]),
                     labelColor: Colors.black,
                     unselectedLabelColor: Colors.black54,
                     indicatorPadding: EdgeInsets.symmetric(horizontal: getDimention(context, 10)),
                     dividerColor: Colors.transparent,
-                    tabs:  [
-                      Tab( child: Text('General',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),),
-                      Tab(child: Text('Estadisticas',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),),
-                      Tab(child: Text('Evoluciones',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),)
-                    ],
+                    tabs:  _tabs,
                   ),
                   body: TabBarView(
+                    controller: _tabController,
                     children: [
                       DraggableScrollableSheet(
                         initialChildSize: 0.95,
                         builder: (context, scrollController){
                           return SingleChildScrollView(
+                            controller: _scrollController,
                             child: _info(context, pokemon),
                           );
                         },
@@ -326,7 +392,6 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                   ),
                 ),
               ),
-            ),
           ),
         ),
         
@@ -363,19 +428,27 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
 
       l.add(ListTile(
         title: Text(element?.name?? ""),
-        leading: CachedNetworkImage(imageUrl: pokeAminated(int.parse(element?.id?.replaceAll('#', '')?? '0')), width: getDimention(context, 100)),
+        leading: Image.asset(pokeAminated(
+          int.parse(element?.id?.replaceAll('#', '')?? '0')), 
+          errorBuilder: (context, error, stackTrace) {
+            return  Image.asset( 
+              officialImageURL(int.parse(pokemon.id?.replaceAll('#', '')?? '0')),
+              width: getFontSize(context, 150),
+              errorBuilder: (context, error, stackTrace) {
+                return  Image.asset( 'assets/images/pokeball.gif');
+              },                    
+            );
+          },
+          width: getDimention(context, 100)),
         subtitle: Text("${element?.weight} | ${element?.height} "),
         trailing: const Icon(Icons.arrow_forward_ios_rounded),
         onTap: () async {
-           //  PokeAPI.getObject<Species>(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')).then((value) => pokemon?.ydescription =value?.flavorTextEntry?.replaceAll(RegExp(r'\n'), ' ')?? '');
-            pokebloc?.pokemonBloc.setPokemon(element);
-
-            // // navigate to pokemon details page
-            // Navigator.pushNamed(context, 'pk_details', arguments: element);
-
-            setState(() {
-              pokemon = element?? PokemonB();
-            });
+          pokebloc?.pokemonBloc.setPokemon(element);
+          _tabController.animateTo(0);
+          setState(() {
+            selectedIndex = 0;
+            pokemon = element?? PokemonB();
+          });
         },
       ));
     });
@@ -384,11 +457,27 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
 
   }
 
-  IconButton _likeBTN() {
-    return IconButton(
-      onPressed: () {},
-      icon: const Icon(Icons.favorite_border, color: Colors.white,),
+  Widget _likeBTN() {
+    return Row(
+      children: [
+        _btnBuscar(),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.favorite_border, color: Colors.white,),
+        ),
+      ],
     );
+  }
+
+  IconButton _btnBuscar() {
+    return IconButton(
+        onPressed: () => {
+          showSearch(
+            context: context, 
+            delegate: SearchPokemonDelegate())
+        }, 
+        icon: const Icon(Icons.search, color: Colors.white,)
+      );
   }
 
   Widget _info(BuildContext context, PokemonB? pokemon) {
@@ -412,18 +501,34 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CachedNetworkImage(
-                alignment: Alignment.topRight,
-                imageUrl: pokeAminated(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+              Image.asset(
+                pokeAminated(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
                 height: getDimention(context,75),
+                errorBuilder: (context, error, stackTrace) {
+                  return  Image.asset( 
+                    officialImageURL(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+                    width: getFontSize(context, 100),
+                    errorBuilder: (context, error, stackTrace) {
+                      return  Image.asset( 'assets/images/pokeball.gif');
+                    },                    
+                  );
+                },
                 fit: BoxFit.fitHeight,                       
               ),
               const SizedBox(
                 width: 100,
               ),
-              CachedNetworkImage(
-                alignment: Alignment.topRight,
-                imageUrl: pokeShinyAminated(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+              Image.asset(
+                pokeShinyAminated(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+                errorBuilder: (context, error, stackTrace) {
+                  return  Image.asset( 
+                    officialShinyImageURL(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
+                    width: getFontSize(context, 100),
+                    errorBuilder: (context, error, stackTrace) {
+                      return  Image.asset( 'assets/images/pokeball.gif');
+                    },                    
+                  );
+                },
                 height: getDimention(context,75),
                 fit: BoxFit.fitHeight,                       
               ),
