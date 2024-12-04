@@ -12,7 +12,7 @@ class BlocProvider extends InheritedWidget {
     return _instance?? BlocProvider._(key: key,child: child,);
   }
 
-  BlocProvider._({ Key? key,  required child}) : super(key: key, child: child);
+  BlocProvider._({ super.key,  required child}) : super(child: child);
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => true;

@@ -16,7 +16,7 @@ class PokemonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    Color color = Theme.of(context).colorScheme.surface;
     return InkWell(
       hoverColor: Colors.transparent,
       onTap: () async {
@@ -31,7 +31,7 @@ class PokemonCard extends StatelessWidget {
               Positioned(
                 top: getDimention(context, 55),
                 left: getDimention(context, 70),
-                child: Image.asset('assets/images/pokeball.png', height: getDimention(context, 150), fit: BoxFit.fill)
+                child: Image.asset('assets/images/pokeball.png', height: getDimention(context, 150), fit: BoxFit.fill,)
               ),
               Positioned(
                 top: 20,
@@ -43,9 +43,9 @@ class PokemonCard extends StatelessWidget {
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                         fontSize: getFontSize(context, 18),
-                        overflow: TextOverflow.clip
+                        overflow: TextOverflow.clip,
+                        color: color
                       ),
                       pokemon?.name?.toUpperCase()?? ''),
                       TypeBadge(type: pokemon?.typeofpokemon?[0], onlyImage: true,)
@@ -59,8 +59,7 @@ class PokemonCard extends StatelessWidget {
                   child: Image.asset(
                     officialImageURL(int.parse(pokemon?.id?.replaceAll('#', '')?? '0')),
                     height: getDimention(context, 150),
-                    fit: BoxFit.contain,
-                        
+                    fit: BoxFit.contain,                        
                   ),
                 ),
               ),

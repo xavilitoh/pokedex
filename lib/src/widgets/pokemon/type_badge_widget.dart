@@ -23,9 +23,9 @@ class TypeBadge extends StatelessWidget {
 
     return Container(
       height: getFontSize(context, 50),
-      decoration: const BoxDecoration(                
-        color: Colors.white54,
-        borderRadius: BorderRadius.all(Radius.circular(20))
+      decoration: BoxDecoration(                
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(20))
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 4.0, bottom: 4.0),

@@ -24,10 +24,21 @@ class MyApp extends StatelessWidget {
           
         },
         theme: ThemeData(
-          fontFamily: 'HankRnd-Regular',
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-          useMaterial3: true,
+          brightness: Brightness.light,
+          primaryColor: Colors.blue,
+          scaffoldBackgroundColor: Colors.white,
+          textTheme: TextTheme(bodyLarge: TextStyle(color: Colors.black)),
         ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Colors.teal,
+          scaffoldBackgroundColor: Colors.black,
+          textTheme: const TextTheme(bodyLarge: TextStyle(color: Colors.white)),
+          cardTheme: const CardTheme(
+             color: Colors.black45
+          )
+        ),
+        themeMode: ThemeMode.system,
         home: const HomePage(),
       ),
     );

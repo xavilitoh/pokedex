@@ -11,9 +11,10 @@ import '../../providers/pokemos/pokemon_search_provider.dart';
 import '../../utils/general.dart';
 import '../../utils/pokemon_types_util.dart';
 import '../../widgets/animated_ball.dart';
+import '../../widgets/card_widget.dart';
 
 class PokemonDetailPage extends StatefulWidget  {
-  const PokemonDetailPage({Key? key}) : super(key: key);
+  const PokemonDetailPage({super.key});
   @override
   State<PokemonDetailPage> createState() => _PokemonDetailPageState();
 }
@@ -32,6 +33,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
   final _panelController = PanelController();
   late final ScrollController _scrollController = ScrollController();
   late TabController _tabController;
+  late Color color;
 
   late List<Widget> _tabs = [];
 
@@ -85,9 +87,10 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
       });
   }
 
-
   @override
   Widget build(BuildContext context) {
+
+    color = Theme.of(context).colorScheme.surface;
 
     _tabs = [
               Tab( child: Text('General',style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w900,fontSize: getFontSize(context, 13)),),),
@@ -113,8 +116,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     });    
 
     return Scaffold(
-      appBar: opacity > 0.9? AppBar(
-        backgroundColor: typeColor(type: pokemon.typeofpokemon?[0]),
+      appBar: opacity > 0.87? AppBar(
         centerTitle: true,
         iconTheme: const IconThemeData(
           color: Colors.white
@@ -154,6 +156,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
   }
 
   Stack _details(BuildContext context, PokemonB? pokemon, Size size) {
+    var backgroundColor = Theme.of(context).colorScheme.surface;
     return Stack(
       children: [
         Positioned(
@@ -163,7 +166,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
           child: Align(
             heightFactor: getDimention(context,0.75),
             widthFactor: .7,
-            child: AnimatedBall(opacity: opacity, imageHeight: getDimention(context,250), controller: _controller,),
+            child: AnimatedBall(opacity: opacity, imageHeight: getDimention(context,250), controller: _controller, color: Theme.of(context).colorScheme.surface,),
           )
         ),
         Positioned(
@@ -174,7 +177,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             height: fullHeight(context) * 0.03, 
             fit: BoxFit.fill,
             alignment: Alignment.center,
-            color: Colors.white24,
+            color: Theme.of(context).colorScheme.surface,
           )
         ),
         Positioned(
@@ -196,7 +199,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                         children: [
                           IconButton(
                             onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back, color: Colors.white,),
+                            icon:  Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.surface,),
                           ),
                           _likeBTN(),
                         ],
@@ -214,7 +217,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                             Text(
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.surface,
                                   fontSize: getFontSize(context, 32),
                                   overflow: TextOverflow.ellipsis
                                 ),
@@ -244,11 +247,11 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
         Positioned(
           bottom: 0,
           child: Container(
-            height: fullHeight(context) * 0.60,
+            height: fullHeight(context) * 0.0,
             width: fullWidth(context),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20) ),
-              color: Colors.white,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20) ),
+              color: backgroundColor
             ),            
           ),
         ),
@@ -269,7 +272,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                       },
                       icon: Icon(
                          Icons.arrow_back_ios_outlined,
-                         color: Colors.white,
+                         color: Theme.of(context).colorScheme.surface,
                          size: getFontSize(context, 40),
                         )
                       ),
@@ -295,7 +298,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                       },
                       icon: Icon(
                          Icons.arrow_forward_ios_outlined,
-                         color: Colors.white,
+                         color: Theme.of(context).colorScheme.surface,
                          size: getFontSize(context, 40),
                         )
                       ),
@@ -334,21 +337,21 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
               opacity = slide;
             });
           },
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          borderRadius: opacity < 0.87? const BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)) : null,
           panel: Container(
             width: fullWidth(context),
-            margin: EdgeInsets.symmetric(horizontal: fullWidth(context) > 1199? getDimention(context, 300) : fullWidth(context) > 500? getDimention(context, 80) : getDimention(context, 15)),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              borderRadius: opacity < 0.87? const BorderRadius.only(
                   topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20)),
+                  topRight: Radius.circular(20)
+                ) : null,
+              color: backgroundColor
             ),
             child: Padding(
-                padding: EdgeInsets.only(top: fullHeight(context) * 0.04),
+                padding: EdgeInsets.only(top: fullHeight(context) * 0.04, bottom: fullHeight(context) * 0.12,),
                 child: Scaffold(
-                  backgroundColor: Colors.white,
+                  backgroundColor: backgroundColor,
                   appBar: TabBar(
                     controller: _tabController,
                     indicatorColor: typeColor(type: pokemon?.typeofpokemon?[0]),
@@ -463,7 +466,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
         _btnBuscar(),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.favorite_border, color: Colors.white,),
+          icon:  Icon(Icons.favorite_border, color: color,),
         ),
       ],
     );
@@ -476,7 +479,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             context: context, 
             delegate: SearchPokemonDelegate())
         }, 
-        icon: const Icon(Icons.search, color: Colors.white,)
+        icon: Icon(Icons.search, color: color,)
       );
   }
 
@@ -535,57 +538,45 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
             ],
           ),
         ),
-        Container(
-            height: getFontSize(context, 100),
-            margin: EdgeInsets.symmetric(horizontal: getFontSize(context, 30), vertical: getFontSize(context, 10)),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    blurRadius: 20,
-                    color: Colors.grey.withOpacity(.2),
-                    offset: const Offset(0, 5),
-                  )
-                ]),
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: getFontSize(context, 18)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      '${pokemon?.weight}',
-                      style: TextStyle(
-                          color: Colors.black87, fontFamily: 'Circular-bold',fontSize: getFontSize(context, 18)),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    customText('Peso',style: TextStyle(fontSize: getFontSize(context,14)),)
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      '${pokemon?.height}',
-                      style: TextStyle(
-                          color: Colors.black87, fontFamily: 'Circular-bold',fontSize: getFontSize(context,18)),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text('Altura',style: TextStyle(fontSize: getFontSize(context,14)),)
-                  ],
-                ),
-                
-              ],
-            ),
+        InfoCard(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '${pokemon?.weight}',
+                    style: TextStyle(
+                         fontFamily: 'Circular-bold',fontSize: getFontSize(context, 18)),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  customText('Peso',style: TextStyle(fontSize: getFontSize(context,14)),)
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '${pokemon?.height}',
+                    style: TextStyle(
+                         fontFamily: 'Circular-bold',fontSize: getFontSize(context,18)),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text('Altura',style: TextStyle(fontSize: getFontSize(context,14)),)
+                ],
+              ),
+              
+            ],
+          ),
         ),
+       const SizedBox(height: 40,),
        _debilidades(context, pokemon),
         const SizedBox(height: 40,),
         _cria(context, pokemon),
@@ -596,23 +587,25 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
   }
 
   Widget _debilidades(BuildContext context, PokemonB? pokemon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-              'Debilidades',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
-                fontSize: getFontSize(context, 20)
-              )
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: _tiposDebilidades(pokemon),
-          )
-      ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: fullWidth(context) * 0.1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+                'Debilidades',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: getFontSize(context, 20)
+                )
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: _tiposDebilidades(pokemon),
+            )
+        ],
+      ),
     );
   }
 
@@ -627,155 +620,159 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
     return list;
   }
 
-  Column _entrenamiento(BuildContext context, PokemonB? pokemon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-            'Entrenamiento',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-              fontSize: getFontSize(context, 20)
-            )
-        ),
-        ListTile(
-          visualDensity: const VisualDensity(vertical: .1),
-          leading: Text(
-              'Exp. Base',
+  Widget _entrenamiento(BuildContext context, PokemonB? pokemon) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: fullWidth(context) * 0.1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+              'Entrenamiento',
               style: TextStyle(
-                color: Colors.grey,
-                fontSize: getFontSize(context, 18)
+                fontWeight: FontWeight.w700,
+                fontSize: getFontSize(context, 20)
               )
           ),
-          title: Text(
-                  pokemon?.baseExp?? '',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context, 18)
+          ListTile(
+            visualDensity: const VisualDensity(vertical: .1),
+            leading: Text(
+                'Exp. Base',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: getFontSize(context, 18)
+                )
+            ),
+            title: Text(
+                    pokemon?.baseExp?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-        ),
-        ListTile(
-          visualDensity: const VisualDensity(vertical: .1),
-          leading: Text(
-              'Habilidades',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: getFontSize(context, 18)
-              )
           ),
-          title: Text(
-                  pokemon?.abilities?[0].toString()?? '',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context, 18)
+          ListTile(
+            visualDensity: const VisualDensity(vertical: .1),
+            leading: Text(
+                'Habilidades',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: getFontSize(context, 18)
+                )
+            ),
+            title: Text(
+                    pokemon?.abilities?[0].toString()?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
   Widget _cria(BuildContext context, PokemonB? pokemon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.all(getFontSize(context, 1)),
-          child: Text(
-              'Crianza',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
-                fontSize: getFontSize(context, 20)
-              )
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: fullWidth(context) * 0.1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(getFontSize(context, 1)),
+            child: Text(
+                'Crianza',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: getFontSize(context, 20)
+                )
+              ),
+          ),
+          ListTile(
+            visualDensity: const VisualDensity(vertical: .1),
+            leading: Text(
+                'Genero:',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: getFontSize(context, 18)
+                )
             ),
-        ),
-        ListTile(
-          visualDensity: const VisualDensity(vertical: .1),
-          leading: Text(
-              'Genero:',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: getFontSize(context, 18)
-              )
-          ),
-          title: Row(
-            children: [
-                Text(
-                  '♂️',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: getFontSize(context, 18)
+            title: Row(
+              children: [
+                  Text(
+                    '♂️',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-                Text(
-                  pokemon?.malePercentage?? '',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context, 18)
+                  Text(
+                    pokemon?.malePercentage?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20,),
-                Text(
-                  '♀️',
-                  style: TextStyle(
-                    color: Colors.pink,
-                    fontSize: getFontSize(context, 18)
+                  const SizedBox(width: 20,),
+                  Text(
+                    '♀️',
+                    style: TextStyle(
+                      color: Colors.pink,
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-                Text(
-                  pokemon?.femalePercentage?? '',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context, 18)
+                  Text(
+                    pokemon?.femalePercentage?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
-        ListTile(
-          leading: Text(
-              'Grupo Huevo:',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: getFontSize(context, 18)
-              )
-          ),
-          title: Row(
-            children: [
-                Text(
-                  pokemon?.eggGroups?? '',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context, 18)
+          ListTile(
+            leading: Text(
+                'Grupo Huevo:',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: getFontSize(context, 18)
+                )
+            ),
+            title: Row(
+              children: [
+                  Text(
+                    pokemon?.eggGroups?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
-        ListTile(
-          leading: Text(
-              'Ciclo Huevo:',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: getFontSize(context, 18)
-              )
-          ),
-          title: Row(
-            children: [
-                Text(
-                  pokemon?.cycles?? '',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context, 18)
+          ListTile(
+            leading: Text(
+                'Ciclo Huevo:',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: getFontSize(context, 18)
+                )
+            ),
+            title: Row(
+              children: [
+                  Text(
+                    pokemon?.cycles?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: getFontSize(context, 18)
+                    ),
                   ),
-                ),
-            ],
-          ),
-        )
-      ],
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -834,7 +831,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
           pokemon?.id?? '',
           
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   fontSize: fullHeight(context) * 0.02
                 ),
         );
@@ -1087,7 +1084,7 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
                   width: fullWidth(context) * 0.35,
                   animation: true,
                   lineHeight: getFontSize(context, 15),
-                  animationDuration: 2000,
+                  animationDuration: 1000,
                   percent: ((pokemon?.speed?? 1) / divider).toDouble(),
                   barRadius: const Radius.circular(20),
                   progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
@@ -1097,47 +1094,47 @@ class _PokemonDetailPageState extends State<PokemonDetailPage> with TickerProvid
           ],
         ));
     widgetsList.add(const SizedBox(height: 10,));
-    //total
-    widgetsList.add(Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: getDimention(context, 80),
-              child: Text(
-                  'TOT',
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: getFontSize(context, 18),
-                    overflow: TextOverflow.ellipsis
-                  ),
-                ),
-            ),
-            Center(
-              child: Text(
-                  '${pokemon?.total}',
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: getFontSize(context,18),
-                    overflow: TextOverflow.ellipsis
-                  ),
-                ),
-            ),
-            Center(
-              heightFactor: 2,
-              child: LinearPercentIndicator(
-                  width: fullWidth(context) * 0.35,
-                  animation: true,
-                  lineHeight: getFontSize(context, 15),
-                  animationDuration: 2000,
-                  percent: ((pokemon?.total?? 1) / divider).toDouble(),
-                  barRadius: const Radius.circular(20),
-                  progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
-                  backgroundColor: Colors.grey[300],
-                ),
-            ),
-          ],
-        ));
+    // //total
+    // widgetsList.add(Row(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //       children: [
+    //         SizedBox(
+    //           width: getDimention(context, 80),
+    //           child: Text(
+    //               'TOT',
+    //               style: TextStyle(
+    //                 color: Colors.grey[400],
+    //                 fontSize: getFontSize(context, 18),
+    //                 overflow: TextOverflow.ellipsis
+    //               ),
+    //             ),
+    //         ),
+    //         Center(
+    //           child: Text(
+    //               '${pokemon?.total}',
+    //               style: TextStyle(
+    //                 color: Colors.grey[800],
+    //                 fontSize: getFontSize(context,18),
+    //                 overflow: TextOverflow.ellipsis
+    //               ),
+    //             ),
+    //         ),
+    //         Center(
+    //           heightFactor: 2,
+    //           child: LinearPercentIndicator(
+    //               width: fullWidth(context) * 0.35,
+    //               animation: true,
+    //               lineHeight: getFontSize(context, 15),
+    //               animationDuration: 2000,
+    //               percent: ((pokemon?.total?? 1) / divider).toDouble(),
+    //               barRadius: const Radius.circular(20),
+    //               progressColor: typeColor(type: pokemon?.typeofpokemon?[0]),
+    //               backgroundColor: Colors.grey[300],
+    //             ),
+    //         ),
+    //       ],
+    //     ));
 
 
     return Column(
@@ -1153,11 +1150,11 @@ class CustomBoxShadow extends BoxShadow {
         final BlurStyle blurStyle;
     
       const CustomBoxShadow({
-        Color color = const Color(0xFF000000),
-        Offset offset = Offset.zero,
-        double blurRadius = 0.0,
+        super.color,
+        super.offset,
+        super.blurRadius,
         this.blurStyle = BlurStyle.normal,
-      }) : super(color: color, offset: offset, blurRadius: blurRadius);
+      });
     
       @override
       Paint toPaint() {
